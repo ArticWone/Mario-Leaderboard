@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Mario HTML5 - NES Edition</title>
+    <meta name="description" content="Play the classic Super Mario HTML5 with a live global leaderboard. Compete for the high score!">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://ltmdzeyclsmnqpooerpz.supabase.co; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Super Mario HTML5 - NES Edition">
+    <meta property="og:description" content="Classic Mario gameplay with a live Supabase leaderboard. Can you reach the top?">
+    <meta property="og:image" content="mariohtml5-my-version/images/logo.gif">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Super Mario HTML5 - NES Edition">
+    <meta property="twitter:description" content="Classic Mario gameplay with a live Supabase leaderboard. Can you reach the top?">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="page-antialias">
+
+    <div class="main-wrapper">
+        
+        <!-- Game Screen -->
+        <div id="game-container" class="scanlines">
+            <canvas id="canvas" width="320" height="240">
+                <p>Your browser does not support the canvas element.</p>
+            </canvas>
+        </div>
+
+        <div id="live-scoreboard" class="content-width">
+            <div class="hud-shell">
+                <div class="hud-title-row">
+                    <div class="hud-title-block">
+                        <span class="hud-kicker">LIVE RUN</span>
+                        <h2 class="hud-title">PLAYER HUD</h2>
+                    </div>
+                    <div id="game-status-pill" class="hud-pill">READY</div>
+                </div>
+                <div class="hud-grid">
+                    <div class="hud-card">
+                        <span class="hud-label">SCORE</span>
+                        <span id="live-score-value" class="hud-value">00000000</span>
+                    </div>
+                    <div class="hud-card">
+                        <span class="hud-label">COINS</span>
+                        <span id="live-coins-value" class="hud-value">00</span>
+                    </div>
+                    <div class="hud-card">
+                        <span class="hud-label">WORLD</span>
+                        <span id="live-world-value" class="hud-value">1-1</span>
+                    </div>
+                    <div class="hud-card">
+                        <span class="hud-label">TIME</span>
+                        <span id="live-time-value" class="hud-value">200</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Controls -->
+        <div id="controls-container" class="controls-shell">
+            <div class="controls-row">
+                <!-- D-Pad -->
+                <div class="dpad-stage">
+                    <div class="dpad-well">
+                        <!-- The Cross Shape -->
+                        <div class="dpad-cross-v"></div>
+                        <div class="dpad-cross-h"></div>
+                        
+                        <!-- Interactive Buttons -->
+                        <div id="btn-up" class="dpad-btn dpad-btn-up">
+                            <span class="dpad-arrow">&#9650;</span>
+                        </div>
+                        <div id="btn-down" class="dpad-btn dpad-btn-down">
+                            <span class="dpad-arrow">&#9660;</span>
+                        </div>
+                        <div id="btn-left" class="dpad-btn dpad-btn-left">
+                            <span class="dpad-arrow">&#9664;</span>
+                        </div>
+                        <div id="btn-right" class="dpad-btn dpad-btn-right">
+                            <span class="dpad-arrow">&#9654;</span>
+                        </div>
+                        
+                        <!-- Center Circle Detail -->
+                        <div class="dpad-center"></div>
+                    </div>
+                </div>
+
+                <!-- Start / Select -->
+                <div class="control-pillars">
+                    <div class="mini-control">
+                        <div id="btn-select" class="rubber-btn rubber-btn-select"></div>
+                        <span class="mini-label">SELECT</span>
+                    </div>
+                    <div class="mini-control">
+                        <div id="btn-start" class="rubber-btn rubber-btn-start"></div>
+                        <span class="mini-label">START</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-cluster">
+                    <div class="action-control">
+                        <div id="btn-run" class="action-btn action-btn-run">A</div>
+                        <span class="action-label">FIREBALL</span>
+                    </div>
+                    <div class="action-control">
+                        <div id="btn-jump" class="action-btn action-btn-jump">S</div>
+                        <span class="action-label">JUMP</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboard-container" class="leaderboard-shell">
+            <div class="leaderboard-head">
+                <div class="leaderboard-title-row">
+                    <span class="leaderboard-star">&#9733;</span>
+                    <h3 class="leaderboard-title">TOP SCORES</h3>
+                    <span class="leaderboard-star">&#9733;</span>
+                </div>
+                <div class="leaderboard-subtitle">LIVE LEADERBOARD</div>
+                <div class="db-status-row">
+                    <span id="db-status-dot" class="status-dot status-connecting"></span>
+                    <span id="db-status-text" class="db-status-text">DB CONNECTING...</span>
+                </div>
+            </div>
+
+            <div id="leaderboard-rows" class="leaderboard-rows">
+                <!-- Rows will be injected here -->
+                <div class="leaderboard-loading">
+                    <span class="leaderboard-loading-text blink">LOADING...</span>
+                </div>
+            </div>
+            
+            <div id="submit-container" class="submit-shell">
+                <!-- Submit form will be injected here when game ends -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Enjine Includes -->
+    <script src="mariohtml5-my-version/Enjine/core.js"></script>
+    <script src="mariohtml5-my-version/Enjine/gameCanvas.js"></script>
+    <script src="mariohtml5-my-version/Enjine/keyboardInput.js"></script>
+    <script src="mariohtml5-my-version/Enjine/resources.js"></script>
+    <script src="mariohtml5-my-version/Enjine/drawable.js"></script>
+    <script src="mariohtml5-my-version/Enjine/state.js"></script>
+    <script src="mariohtml5-my-version/Enjine/gameTimer.js"></script>
+    <script src="mariohtml5-my-version/Enjine/camera.js"></script>
+    <script src="mariohtml5-my-version/Enjine/drawableManager.js"></script>
+    <script src="mariohtml5-my-version/Enjine/sprite.js"></script>
+    <script src="mariohtml5-my-version/Enjine/spriteFont.js"></script>
+    <script src="mariohtml5-my-version/Enjine/frameSprite.js"></script>
+    <script src="mariohtml5-my-version/Enjine/animatedSprite.js"></script>
+    <script src="mariohtml5-my-version/Enjine/collideable.js"></script>
+    <script src="mariohtml5-my-version/Enjine/application.js"></script>
+
+    <!-- Actual game code -->
+    <script src="mariohtml5-my-version/code/setup.js"></script>
+    <script src="mariohtml5-my-version/code/spriteCuts.js"></script>
+    <script src="mariohtml5-my-version/code/level.js"></script>
+    <script src="mariohtml5-my-version/code/backgroundGenerator.js"></script>
+    <script src="mariohtml5-my-version/code/backgroundRenderer.js"></script>
+    <script src="mariohtml5-my-version/code/improvedNoise.js"></script>
+    <script src="mariohtml5-my-version/code/notchSprite.js"></script>
+    <script src="mariohtml5-my-version/code/character.js"></script>
+    <script src="mariohtml5-my-version/code/levelRenderer.js"></script>
+    <script src="mariohtml5-my-version/code/levelGenerator.js"></script>
+    <script src="mariohtml5-my-version/code/spriteTemplate.js"></script>
+    <script src="mariohtml5-my-version/code/enemy.js"></script>
+    <script src="mariohtml5-my-version/code/fireball.js"></script>
+    <script src="mariohtml5-my-version/code/sparkle.js"></script>
+    <script src="mariohtml5-my-version/code/coinAnim.js"></script>
+    <script src="mariohtml5-my-version/code/mushroom.js"></script>
+    <script src="mariohtml5-my-version/code/particle.js"></script>
+    <script src="mariohtml5-my-version/code/fireFlower.js"></script>
+    <script src="mariohtml5-my-version/code/bulletBill.js"></script>
+    <script src="mariohtml5-my-version/code/flowerEnemy.js"></script>
+    <script src="mariohtml5-my-version/code/shell.js"></script>
+
+    <script src="mariohtml5-my-version/code/titleState.js"></script>
+    <script src="mariohtml5-my-version/code/loadingState.js"></script>
+    <script src="mariohtml5-my-version/code/loseState.js"></script>
+    <script src="mariohtml5-my-version/code/winState.js"></script>
+    <script src="mariohtml5-my-version/code/mapState.js"></script>
+    <script src="mariohtml5-my-version/code/levelState.js"></script>
+
+    <script src="mariohtml5-my-version/code/music.js"></script>
+
+    <!-- Custom Leaderboard & Initialization -->
+    <script src="leaderboard.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
