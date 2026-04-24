@@ -5,6 +5,7 @@ This folder is a standalone Docker project for running the hardened Mario site b
 ## What it includes
 
 - The full static site and game assets
+- `mariohtml5-my-version.zip` containing the game engine, source, images, sounds, and midi files
 - `Dockerfile` for a small NGINX image
 - `docker/nginx/default.conf` with:
   - `/healthz` endpoint
