@@ -1,0 +1,9 @@
+.git
+.gitignore
+*.log
+*.tmp
+*.bak
+node_modules/
+_dist_/
+nginx-ready/
+Mario.v5/
