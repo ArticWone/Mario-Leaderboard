@@ -2,6 +2,8 @@
 
 This folder is a standalone Docker project for running the hardened Mario site behind NGINX.
 
+Verification note: repository packaging was rechecked on April 24, 2026.
+
 ## What it includes
 
 - The hardened static site files for the leaderboard wrapper
