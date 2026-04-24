@@ -4,8 +4,8 @@ This folder is a standalone Docker project for running the hardened Mario site b
 
 ## What it includes
 
-- The full static site and game assets
-- `mariohtml5-my-version.zip` containing the game engine, source, images, sounds, and midi files
+- The hardened static site files for the leaderboard wrapper
+- A `Dockerfile` that downloads the public `robertkleffner/mariohtml5` engine source during image build and places it under `mariohtml5-my-version`
 - `Dockerfile` for a small NGINX image
 - `docker/nginx/default.conf` with:
   - `/healthz` endpoint
@@ -53,4 +53,15 @@ If you prefer to build on another machine and import into Unraid, build the imag
 
 ## External dependency
 
-This project is self-contained except for the live Supabase backend used by the leaderboard in `leaderboard.js`.
+This project depends on:
+
+- the live Supabase backend used by the leaderboard in `leaderboard.js`
+- GitHub availability during image build, because the Docker build downloads the public Mario engine source once and bakes it into the final image
+
+## GitHub and GHCR
+
+This repo is set up to publish a container image to:
+
+`ghcr.io/articwone/mario-leaderboard:latest`
+
+Once GitHub Actions finishes, Unraid can pull that image directly instead of building locally.
