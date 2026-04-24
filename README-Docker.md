@@ -24,7 +24,7 @@ Build:
 docker build -t mario-v5 .
 ```
 
-Run:
+Run a locally built image:
 
 ```bash
 docker run -d --name Mario-Leaderboard -p 18673:80 --restart unless-stopped mario-v5
@@ -44,12 +44,23 @@ docker compose up -d --build
 
 For an Unraid Docker template, use:
 
-- Repository: your built image name, for example `mario-v5:latest`
+- Repository: `ghcr.io/articwone/mario-leaderboard:latest`
 - Name: `Mario-Leaderboard`
 - Container Port: `80`
 - Host Port: `18673`
 - Network Type: `bridge`
 - Restart Policy: `unless-stopped`
+
+Or run it directly on Unraid:
+
+```bash
+docker run -d --name Mario-Leaderboard -p 18673:80 --restart unless-stopped ghcr.io/articwone/mario-leaderboard:latest
+```
+
+This repo also includes `unraid/Mario-Leaderboard.xml`, a ready-to-import
+Unraid Docker template that uses:
+
+`ghcr.io/articwone/mario-leaderboard:latest`
 
 If you prefer to build on another machine and import into Unraid, build the image there and push it to your registry, or save/load it with `docker save` and `docker load`.
 

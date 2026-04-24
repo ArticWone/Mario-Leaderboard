@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>Mario-Leaderboard</Name>
+  <Repository>ghcr.io/articwone/mario-leaderboard:latest</Repository>
+  <Registry>https://ghcr.io/articwone/mario-leaderboard</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/articwone/Mario-Leaderboard</Support>
+  <Project>https://github.com/articwone/Mario-Leaderboard</Project>
+  <Overview>Static Mario leaderboard site served by NGINX.</Overview>
+  <Category>GameServers: Web:</Category>
+  <WebUI>http://[IP]:[PORT:80]/</WebUI>
+  <TemplateURL/>
+  <Icon/>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="WebUI" Target="80" Default="18673" Mode="tcp" Description="HTTP port for the Mario leaderboard site." Type="Port" Display="always" Required="true" Mask="false">18673</Config>
+</Container>
