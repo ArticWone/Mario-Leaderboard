@@ -8,7 +8,7 @@ COPY index.html /usr/share/nginx/html/index.html
 COPY styles.css /usr/share/nginx/html/styles.css
 COPY main.js /usr/share/nginx/html/main.js
 COPY leaderboard.js /usr/share/nginx/html/leaderboard.js
-COPY nginx-security-headers.conf /usr/share/nginx/html/nginx-security-headers.conf
+COPY nginx-security-headers.conf /etc/nginx/snippets/security-headers.conf
 COPY mariohtml5-my-version.zip /tmp/mariohtml5-my-version.zip
 RUN unzip -q /tmp/mariohtml5-my-version.zip -d /usr/share/nginx/html \
   && rm -f /tmp/mariohtml5-my-version.zip
