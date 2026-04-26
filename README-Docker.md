@@ -81,6 +81,102 @@ Or run it directly on Unraid:
 docker run -d --name Mario-Leaderboard -p 18673:80 -v /mnt/user/appdata/Mario-Leaderboard:/data --restart unless-stopped ghcr.io/articwone/mario-leaderboard:latest
 ```
 
+## Container Console Commands
+
+These are useful commands after opening a shell inside the running container.
+
+Open the production container shell from Unraid:
+
+```bash
+docker exec -it Mario-Leaderboard sh
+```
+
+Open the test container shell from Unraid:
+
+```bash
+docker exec -it Mario-Leaderboard-Test sh
+```
+
+Show the app files:
+
+```bash
+ls -la /usr/share/mario
+```
+
+This shows the static site files and `server.js` copied into the image.
+
+Show the persistent score folder:
+
+```bash
+ls -la /data
+```
+
+This shows the mounted Docker data folder. In production, it maps to `/mnt/user/appdata/Mario-Leaderboard` on Unraid.
+
+View the current score file:
+
+```bash
+cat /data/scores.json
+```
+
+This prints the saved scores used by `/api/scores`.
+
+Back up the score file from inside the container:
+
+```bash
+cp /data/scores.json /data/scores.backup.json
+```
+
+This creates a backup beside the active score file in the same persistent data folder.
+
+Check the server health from inside the container:
+
+```bash
+node -e "fetch('http://127.0.0.1/healthz').then(r=>r.text()).then(console.log)"
+```
+
+This should print `ok`.
+
+Check the score API from inside the container:
+
+```bash
+node -e "fetch('http://127.0.0.1/api/scores').then(r=>r.text()).then(console.log)"
+```
+
+This prints the top 10 scores returned by the local server.
+
+Submit a test score from inside the container:
+
+```bash
+node -e "fetch('http://127.0.0.1/api/scores',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:'TEST',score:100})}).then(r=>r.text()).then(console.log)"
+```
+
+This writes a test score through the same API the browser uses.
+
+Show the Node server process:
+
+```bash
+ps
+```
+
+This confirms the server process is running inside the container.
+
+Show the container hostname:
+
+```bash
+hostname
+```
+
+This prints the container ID-style hostname, which can help confirm which container shell you are in.
+
+Exit the container shell:
+
+```bash
+exit
+```
+
+This returns you to the Unraid console without stopping the container.
+
 ## External Dependency
 
 Runtime score storage is fully self-contained inside Docker.
@@ -92,3 +188,20 @@ The image build still needs GitHub availability because the Docker build unpacks
 This repo is set up to publish a container image to:
 
 `ghcr.io/articwone/mario-leaderboard:latest`
+
+## Quick Production Update
+
+Run this on Unraid after a new image is published:
+
+```bash
+docker pull ghcr.io/articwone/mario-leaderboard:latest
+docker rm -f Mario-Leaderboard
+docker run -d \
+  --name Mario-Leaderboard \
+  -p 18673:80 \
+  -v /mnt/user/appdata/Mario-Leaderboard:/data \
+  --restart unless-stopped \
+  ghcr.io/articwone/mario-leaderboard:latest
+```
+
+This updates the app container while keeping the production scores in `/mnt/user/appdata/Mario-Leaderboard/scores.json`.

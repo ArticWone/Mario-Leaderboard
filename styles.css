@@ -750,13 +750,13 @@ canvas {
 
 @media (min-width: 640px) {
   .game-stage {
-    grid-template-columns: minmax(0, 512px) 34px;
+    grid-template-columns: minmax(0, 512px) 28px;
     align-items: stretch;
-    gap: 8px;
+    gap: 2px;
   }
 
   .volume-panel {
-    width: 34px;
+    width: 28px;
     min-height: 240px;
     margin: 0;
     padding: 10px 0;
@@ -783,7 +783,7 @@ canvas {
   }
 
   .volume-slider {
-    width: 180px;
+    width: 170px;
     transform: rotate(-90deg);
   }
 
