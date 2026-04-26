@@ -12,7 +12,7 @@ docker run -d \
   -p 18674:80 \
   -v /mnt/user/appdata/Mario-Leaderboard-Test:/data \
   --restart unless-stopped \
-  ghcr.io/whonot-servers/mario-leaderboard:latest
+  ghcr.io/articwone/mario-leaderboard:latest
 ```
 
 Open:
@@ -50,7 +50,7 @@ After login, rerun the test container command.
 Long term, make the package public in GitHub:
 
 ```text
-GitHub -> whonot-servers -> Packages -> mario-leaderboard -> Package settings -> Change visibility -> Public
+GitHub -> ArticWone -> Packages -> mario-leaderboard -> Package settings -> Change visibility -> Public
 ```
 
 ## Direct Build Fallback
@@ -59,7 +59,7 @@ If GHCR is not ready yet, build directly on Unraid:
 
 ```bash
 cd /mnt/user/appdata
-git clone https://github.com/whonot-servers/Mario-Leaderboard.git
+git clone https://github.com/ArticWone/Mario-Leaderboard.git
 cd Mario-Leaderboard
 docker build -t mario-leaderboard:test .
 docker run -d \
