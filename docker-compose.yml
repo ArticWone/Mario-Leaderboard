@@ -6,4 +6,9 @@ services:
     container_name: Mario-Leaderboard
     ports:
       - "18673:80"
+    volumes:
+      - mario-scores:/data
     restart: unless-stopped
+
+volumes:
+  mario-scores:

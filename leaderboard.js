@@ -1,24 +1,19 @@
-// Supabase Configuration
-const SUPABASE_URL = 'https://ltmdzeyclsmnqpooerpz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bWR6ZXljbHNtbnFwb29lcnB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTQyMDYsImV4cCI6MjA5MjQ3MDIwNn0.Tg8LoIIZxQUYg-6L6Kfq6TQEtul9FkA7kt3A5QY6NGk';
-const SUPABASE_HEADERS = {
-    apikey: SUPABASE_KEY,
-    Authorization: `Bearer ${SUPABASE_KEY}`
-};
 const LEADERBOARD_POLL_MS = 15000;
 
-async function supabaseRequest(path, options) {
-    const response = await fetch(`${SUPABASE_URL}${path}`, {
-        ...options,
+const RANK_ICONS = ['1ST', '2ND', '3RD'];
+const RANK_COLORS = ['rank-gold', 'rank-silver', 'rank-bronze', 'rank-standard', 'rank-standard'];
+
+async function scoreRequest(path, options) {
+    const response = await fetch(path, {
+        ...(options || {}),
         headers: {
-            ...SUPABASE_HEADERS,
             ...(options && options.headers ? options.headers : {})
         }
     });
 
     if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || `Supabase request failed with status ${response.status}`);
+        throw new Error(errorText || `Score request failed with status ${response.status}`);
     }
 
     if (response.status === 204) {
@@ -27,9 +22,6 @@ async function supabaseRequest(path, options) {
 
     return response.json();
 }
-
-const RANK_ICONS = ['1ST', '2ND', '3RD'];
-const RANK_COLORS = ['rank-gold', 'rank-silver', 'rank-bronze', 'rank-standard', 'rank-standard'];
 
 function pad(n, len) {
     return String(n).padStart(len, '0');
@@ -43,27 +35,27 @@ function updateStatus(status) {
     if (status === 'online') {
         dot.className = 'status-dot status-online';
         text.className = 'db-status-text db-status-text-online';
-        text.innerText = 'DB ONLINE';
+        text.innerText = 'SCORES READY';
         return;
     }
 
     if (status === 'offline') {
         dot.className = 'status-dot status-offline';
         text.className = 'db-status-text db-status-text-offline';
-        text.innerText = 'DB OFFLINE';
+        text.innerText = 'SCORES OFFLINE';
         return;
     }
 
     dot.className = 'status-dot status-connecting';
     text.className = 'db-status-text db-status-text-connecting';
-    text.innerText = 'DB CONNECTING...';
+    text.innerText = 'SCORES LOADING...';
 }
 
 window.fetchScores = async function() {
     updateStatus('connecting');
 
     try {
-        const data = await supabaseRequest('/rest/v1/leaderboard?select=*&order=score.desc,created_at.asc&limit=8');
+        const data = await scoreRequest('/api/scores');
 
         updateStatus('online');
         if (data && data.length > 0) {
@@ -150,14 +142,14 @@ window.submitScore = async function(name, score) {
     }
 
     try {
-        await supabaseRequest('/rest/v1/rpc/submit_score', {
+        await scoreRequest('/api/scores', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                p_name: cleanName,
-                p_score: cleanScore
+                name: cleanName,
+                score: cleanScore
             })
         });
 
@@ -165,7 +157,7 @@ window.submitScore = async function(name, score) {
         return { ok: true };
     } catch (err) {
         console.error('Error submitting score:', err.message || err);
-        if (String(err.message || '').includes('Invalid score')) {
+        if (String(err.message || '').includes('invalid_score')) {
             return { ok: false, reason: 'invalid_score' };
         }
         return { ok: false, reason: 'network_error' };
