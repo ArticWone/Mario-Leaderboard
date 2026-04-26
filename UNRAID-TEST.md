@@ -1,6 +1,6 @@
 # Unraid Test Container
 
-Use this when testing the Docker-only Mario leaderboard on `whonot` before replacing the production container.
+Use this when testing the Docker-only Mario leaderboard on the Unraid server before replacing the production container.
 
 ## Test From GHCR
 

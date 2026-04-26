@@ -63,7 +63,7 @@ Names are normalized to 6 uppercase letters/numbers. Scores must be whole number
 
 ## Unraid Notes
 
-For a safe first run on `whonot`, use the test-container flow in `UNRAID-TEST.md`.
+For a safe first run on the Unraid server, use the test-container flow in `UNRAID-TEST.md`.
 
 For an Unraid Docker template, use:
 
