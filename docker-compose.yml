@@ -1,0 +1,9 @@
+services:
+  mario-v5:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Mario-Leaderboard
+    ports:
+      - "18673:80"
+    restart: unless-stopped
