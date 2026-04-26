@@ -8,6 +8,7 @@ COPY index.html /usr/share/mario/html/index.html
 COPY styles.css /usr/share/mario/html/styles.css
 COPY main.js /usr/share/mario/html/main.js
 COPY leaderboard.js /usr/share/mario/html/leaderboard.js
+COPY mario-engine-patches.js /usr/share/mario/html/mario-engine-patches.js
 COPY server.js /usr/share/mario/server.js
 COPY assets/favicon-16.png assets/favicon-32.png assets/favicon-192.png assets/favicon-512.png assets/apple-touch-icon.png /usr/share/mario/html/assets/
 COPY mariohtml5-my-version.zip /tmp/mariohtml5-my-version.zip
