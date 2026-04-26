@@ -2,7 +2,7 @@ FROM node:22-alpine
 
 WORKDIR /usr/share/mario/html
 
-RUN apk add --no-cache libcap unzip
+RUN apk add --no-cache unzip
 
 COPY index.html /usr/share/mario/html/index.html
 COPY styles.css /usr/share/mario/html/styles.css
@@ -14,11 +14,7 @@ COPY mariohtml5-my-version.zip /tmp/mariohtml5-my-version.zip
 
 RUN unzip -q /tmp/mariohtml5-my-version.zip -d /usr/share/mario/html \
     && rm -f /tmp/mariohtml5-my-version.zip \
-    && mkdir -p /data \
-    && setcap 'cap_net_bind_service=+ep' /usr/local/bin/node \
-    && chown -R node:node /data /usr/share/mario
-
-USER node
+    && mkdir -p /data
 
 ENV PUBLIC_DIR=/usr/share/mario/html
 ENV SCORE_FILE=/data/scores.json

@@ -7,14 +7,14 @@ Use this when testing the Docker-only Mario leaderboard on `whonot` before repla
 Run this on the Unraid terminal:
 
 ```bash
-docker pull ghcr.io/articwone/mario-leaderboard:sha-b628562
+docker pull ghcr.io/articwone/mario-leaderboard:latest
 docker rm -f Mario-Leaderboard-Test
 docker run -d \
   --name Mario-Leaderboard-Test \
   -p 18674:80 \
   -v /mnt/user/appdata/Mario-Leaderboard-Test:/data \
   --restart unless-stopped \
-  ghcr.io/articwone/mario-leaderboard:sha-b628562
+  ghcr.io/articwone/mario-leaderboard:latest
 ```
 
 Open:
