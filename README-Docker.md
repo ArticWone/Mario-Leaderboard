@@ -1,33 +1,31 @@
-# Mario.v5 Docker
+# Mario Leaderboard Docker
 
-This folder is a standalone Docker project for running the hardened Mario site behind NGINX.
+This repo is a standalone Docker project for running the hardened Mario site with a self-contained score system.
 
-Verification note: repository packaging was rechecked on April 24, 2026.
+Verification note: Docker packaging was updated on April 26, 2026.
 
-## What it includes
+## What It Includes
 
-- The hardened static site files for the leaderboard wrapper
-- A `Dockerfile` that downloads the public `robertkleffner/mariohtml5` engine source during image build and places it under `mariohtml5-my-version`
-- `Dockerfile` for a small NGINX image
-- `docker/nginx/default.conf` with:
-  - `/healthz` endpoint
-  - SPA-friendly fallback to `index.html`
-  - static asset caching
-  - security headers via `nginx-security-headers.conf`
+- Hardened static site files for the Mario leaderboard wrapper
+- `server.js`, a small Node HTTP server that serves the site and score API
+- `/api/scores` for reading and writing the top 10 scores
+- `/healthz` for Docker health checks
+- Static asset caching and security headers
 - `docker-compose.yml` for local testing
+- `unraid/Mario-Leaderboard.xml` for Unraid imports
 
-## Local Docker usage
+## Local Docker Usage
 
 Build:
 
 ```bash
-docker build -t mario-v5 .
+docker build -t mario-leaderboard .
 ```
 
-Run a locally built image:
+Run:
 
 ```bash
-docker run -d --name Mario-Leaderboard -p 18673:80 --restart unless-stopped mario-v5
+docker run -d --name Mario-Leaderboard -p 18673:80 -v mario-scores:/data --restart unless-stopped mario-leaderboard
 ```
 
 Then open:
@@ -40,41 +38,54 @@ Then open:
 docker compose up -d --build
 ```
 
-## Unraid notes
+Scores are stored in the `mario-scores` Docker volume at:
+
+`/data/scores.json`
+
+## Score API
+
+Read the current top 10:
+
+```bash
+curl http://localhost:18673/api/scores
+```
+
+Submit a score:
+
+```bash
+curl -X POST http://localhost:18673/api/scores \
+  -H "Content-Type: application/json" \
+  -d "{\"name\":\"MARIO\",\"score\":12345}"
+```
+
+Names are normalized to 6 uppercase letters/numbers. Scores must be whole numbers from `0` to `9999999`.
+
+## Unraid Notes
 
 For an Unraid Docker template, use:
 
-- Repository: `ghcr.io/articwone/mario-leaderboard:latest`
+- Repository: `ghcr.io/whonot-servers/mario-leaderboard:latest`
 - Name: `Mario-Leaderboard`
 - Container Port: `80`
 - Host Port: `18673`
+- Data Path: map `/mnt/user/appdata/Mario-Leaderboard` to container path `/data`
 - Network Type: `bridge`
 - Restart Policy: `unless-stopped`
 
 Or run it directly on Unraid:
 
 ```bash
-docker run -d --name Mario-Leaderboard -p 18673:80 --restart unless-stopped ghcr.io/articwone/mario-leaderboard:latest
+docker run -d --name Mario-Leaderboard -p 18673:80 -v /mnt/user/appdata/Mario-Leaderboard:/data --restart unless-stopped ghcr.io/whonot-servers/mario-leaderboard:latest
 ```
 
-This repo also includes `unraid/Mario-Leaderboard.xml`, a ready-to-import
-Unraid Docker template that uses:
+## External Dependency
 
-`ghcr.io/articwone/mario-leaderboard:latest`
+Runtime score storage is fully self-contained inside Docker.
 
-If you prefer to build on another machine and import into Unraid, build the image there and push it to your registry, or save/load it with `docker save` and `docker load`.
+The image build still needs GitHub availability because the Docker build unpacks the bundled Mario engine archive into the final image.
 
-## External dependency
-
-This project depends on:
-
-- the live Supabase backend used by the leaderboard in `leaderboard.js`
-- GitHub availability during image build, because the Docker build downloads the public Mario engine source once and bakes it into the final image
-
-## GitHub and GHCR
+## GitHub And GHCR
 
 This repo is set up to publish a container image to:
 
-`ghcr.io/articwone/mario-leaderboard:latest`
-
-Once GitHub Actions finishes, Unraid can pull that image directly instead of building locally.
+`ghcr.io/whonot-servers/mario-leaderboard:latest`

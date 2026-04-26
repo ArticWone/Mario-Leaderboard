@@ -7,3 +7,5 @@ node_modules/
 _dist_/
 nginx-ready/
 Mario.v5/
+scores.json
+data/
