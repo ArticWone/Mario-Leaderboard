@@ -1,7 +1,76 @@
 (function() {
-    if (!window.Mario || !window.Enjine || !Mario.LevelState || !Mario.Shell) {
+    if (!window.Mario || !window.Enjine || !Mario.LevelState || !Mario.Shell || !Mario.Character) {
         return;
     }
+
+    var originalCharacterMove = Mario.Character.prototype.Move;
+    var originalCharacterCalcPic = Mario.Character.prototype.CalcPic;
+    var SLAM_FALL_SPEED = 16;
+
+    function bumpSlamBlock(world, x, y, canBreakBricks) {
+        var block = world.Level.GetBlock(x, y);
+        if (block === 0) return;
+
+        world.Bump(x, y, canBreakBricks);
+
+        if ((Mario.Tile.Behaviors[block & 0xff] & Mario.Tile.Breakable) > 0 && !canBreakBricks) {
+            world.BumpInto(x, y - 1);
+            world.Level.SetBlockData(x, y, 4);
+            Enjine.Resources.PlaySound("bump");
+        }
+    }
+
+    function triggerSlamLanding(character) {
+        var world = character.World;
+        if (!world || !world.Level) return;
+
+        var yTile = ((character.Y + 1) / 16) | 0;
+        var xLeft = ((character.X - character.Width) / 16) | 0;
+        var xRight = ((character.X + character.Width) / 16) | 0;
+        var canBreakBricks = false;
+
+        bumpSlamBlock(world, xLeft, yTile, canBreakBricks);
+        if (xRight !== xLeft) {
+            bumpSlamBlock(world, xRight, yTile, canBreakBricks);
+        }
+    }
+
+    Mario.Character.prototype.Move = function() {
+        var wantsSlam = Enjine.KeyboardInput.IsKeyDown(Enjine.Keys.Down) && !this.OnGround && this.DeathTime === 0 &&
+            this.WinTime === 0 && this.PowerUpTime === 0;
+        var wasSlamJumping = this.SlamJumping;
+
+        this.SlamJumping = wantsSlam;
+        if (wantsSlam && this.Ya < SLAM_FALL_SPEED) {
+            this.JumpTime = 0;
+            this.Ya = SLAM_FALL_SPEED;
+            if (this.Large) {
+                this.Ducking = true;
+            }
+        }
+
+        originalCharacterMove.apply(this, arguments);
+
+        if ((wasSlamJumping || wantsSlam) && this.OnGround) {
+            this.SlamJumping = false;
+            triggerSlamLanding(this);
+        }
+    };
+
+    Mario.Character.prototype.CalcPic = function() {
+        var restoreDucking = this.Ducking;
+
+        if (this.SlamJumping && this.Large) {
+            this.Ducking = true;
+        }
+
+        originalCharacterCalcPic.apply(this, arguments);
+
+        if (this.SlamJumping && this.Large) {
+            this.Ducking = restoreDucking;
+            this.Height = 24;
+        }
+    };
 
     Mario.LevelState.prototype.Update = function(delta) {
         var i = 0, j = 0, xd = 0, yd = 0, sprite = null, hasShotCannon = false, xCannon = 0, x = 0, y = 0,
