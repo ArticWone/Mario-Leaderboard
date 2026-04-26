@@ -11,8 +11,8 @@
   <Project>https://github.com/ArticWone/Mario-Leaderboard</Project>
   <Overview>Docker-only Mario leaderboard site with local JSON score storage.</Overview>
   <Category>GameServers: Web:</Category>
-  <WebUI>http://[IP]:[PORT:80]/</WebUI>
-  <TemplateURL/>
+  <WebUI>http://[IP]:[PORT:WebUI]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/unraid/Mario-Leaderboard.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/assets/favicon-192.png</Icon>
   <ExtraParams/>
   <PostArgs/>
