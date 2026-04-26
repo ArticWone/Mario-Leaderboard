@@ -35,7 +35,7 @@
                 yd = sprite.Y - this.Camera.Y;
                 if (xd < -64 || xd > 320 + 64 || yd < -64 || yd > 240 + 64) {
                     keepOffscreenShell = sprite instanceof Mario.Shell && !sprite.Dead && sprite.DeadTime === 0 &&
-                        yd >= -64 && yd <= 240 + 64;
+                        xd > 320 + 64 && yd >= -64 && yd <= 240 + 64;
                     if (!keepOffscreenShell) {
                         this.Sprites.RemoveAt(i);
                         i--;
