@@ -13,7 +13,7 @@
   <Category>GameServers: Web:</Category>
   <WebUI>http://[IP]:[PORT:80]/</WebUI>
   <TemplateURL/>
-  <Icon/>
+  <Icon>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/assets/favicon-192.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>
