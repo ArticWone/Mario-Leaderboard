@@ -20,7 +20,7 @@ docker run -d \
 Open:
 
 ```text
-http://192.168.8.122:18674
+http://{YOUR-SERVER-IP}:18674
 ```
 
 Test scores are stored separately from production:
