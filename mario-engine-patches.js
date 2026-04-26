@@ -27,7 +27,7 @@
         var yTile = ((character.Y + 1) / 16) | 0;
         var xLeft = ((character.X - character.Width) / 16) | 0;
         var xRight = ((character.X + character.Width) / 16) | 0;
-        var canBreakBricks = false;
+        var canBreakBricks = character.Large;
 
         bumpSlamBlock(world, xLeft, yTile, canBreakBricks);
         if (xRight !== xLeft) {
