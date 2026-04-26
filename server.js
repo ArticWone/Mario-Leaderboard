@@ -191,7 +191,7 @@ async function serveStatic(req, res, pathname) {
     }
 
     const ext = path.extname(filePath).toLowerCase();
-    const immutable = /\.(?:js|css|png|jpg|jpeg|gif|svg|ico|wav|mp3|mid)$/i.test(filePath);
+    const immutable = /\.(?:png|jpg|jpeg|gif|svg|ico|wav|mp3|mid)$/i.test(filePath);
     const body = await fs.readFile(filePath);
 
     send(res, 200, body, {
