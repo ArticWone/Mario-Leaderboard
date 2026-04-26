@@ -13,6 +13,7 @@ const hudState = {
 };
 
 const audioState = {
+    enabled: true,
     volume: 0.35
 };
 
@@ -95,33 +96,82 @@ function startHudLoop() {
 function setAudioVolume(value) {
     const nextVolume = Math.max(0, Math.min(1, Number(value)));
     audioState.volume = Number.isFinite(nextVolume) ? nextVolume : 0.35;
+    syncAudioChannels();
+}
 
+function syncAudioChannels() {
     if (window.Enjine && Enjine.Resources && Enjine.Resources.Sounds) {
         Object.keys(Enjine.Resources.Sounds).forEach(function(name) {
             Enjine.Resources.Sounds[name].forEach(function(channel) {
                 if (channel && typeof channel.volume === 'number') {
-                    channel.volume = audioState.volume;
+                    channel.volume = audioState.enabled ? audioState.volume : 0;
+                    channel.muted = !audioState.enabled;
                 }
             });
         });
     }
 }
 
+function unlockAudioChannels() {
+    if (!window.Enjine || !Enjine.Resources || !Enjine.Resources.Sounds) return;
+
+    Object.keys(Enjine.Resources.Sounds).forEach(function(name) {
+        Enjine.Resources.Sounds[name].forEach(function(channel) {
+            if (!channel) return;
+            channel.muted = true;
+            channel.volume = audioState.volume;
+
+            const playAttempt = channel.play();
+            if (playAttempt && typeof playAttempt.then === 'function') {
+                playAttempt
+                    .then(function() {
+                        channel.pause();
+                        channel.currentTime = 0;
+                        channel.muted = !audioState.enabled;
+                    })
+                    .catch(function() {});
+            } else {
+                channel.pause();
+                channel.currentTime = 0;
+                channel.muted = !audioState.enabled;
+            }
+        });
+    });
+}
+
 function installAudioVolumeControls() {
     if (!window.Enjine || !Enjine.Resources || Enjine.Resources.__volumePatched) return;
 
     const originalAddSound = Enjine.Resources.AddSound;
-    const originalPlaySound = Enjine.Resources.PlaySound;
-
     Enjine.Resources.AddSound = function(name, src, maxChannels) {
         const result = originalAddSound.apply(this, arguments);
-        setAudioVolume(audioState.volume);
+        syncAudioChannels();
         return result;
     };
 
     Enjine.Resources.PlaySound = function(name, loop) {
-        setAudioVolume(audioState.volume);
-        return originalPlaySound.apply(this, arguments);
+        if (!audioState.enabled || !this.Sounds[name]) {
+            return this.Sounds[name] ? this.Sounds[name].index : 0;
+        }
+
+        if (this.Sounds[name].index >= this.Sounds[name].length) {
+            this.Sounds[name].index = 0;
+        }
+
+        const channel = this.Sounds[name][this.Sounds[name].index];
+        channel.volume = audioState.volume;
+        channel.muted = false;
+
+        if (loop) {
+            channel.addEventListener('ended', this.LoopCallback, false);
+        }
+
+        this.Sounds[name].index++;
+        const playAttempt = channel.play();
+        if (playAttempt && typeof playAttempt.catch === 'function') {
+            playAttempt.catch(function() {});
+        }
+        return this.Sounds[name].index;
     };
 
     Enjine.Resources.__volumePatched = true;
@@ -130,12 +180,16 @@ function installAudioVolumeControls() {
 function bindVolumeSlider() {
     const slider = document.getElementById('volume-slider');
     const valueLabel = document.getElementById('volume-value');
-    if (!slider || !valueLabel) return;
+    const audioCheckbox = document.getElementById('audio-enabled');
+    if (!slider || !valueLabel || !audioCheckbox) return;
 
     const savedVolume = window.localStorage.getItem('mario-volume');
+    const savedEnabled = window.localStorage.getItem('mario-audio-enabled');
     const initialVolume = savedVolume === null ? 35 : Math.max(0, Math.min(100, Number(savedVolume)));
 
     slider.value = Number.isFinite(initialVolume) ? initialVolume : 35;
+    audioCheckbox.checked = savedEnabled === null ? true : savedEnabled === 'true';
+    audioState.enabled = audioCheckbox.checked;
 
     const syncVolume = function() {
         const percent = Math.max(0, Math.min(100, Number(slider.value)));
@@ -144,8 +198,26 @@ function bindVolumeSlider() {
         setAudioVolume(percent / 100);
     };
 
+    const syncEnabled = function() {
+        audioState.enabled = audioCheckbox.checked;
+        window.localStorage.setItem('mario-audio-enabled', String(audioState.enabled));
+        syncAudioChannels();
+
+        if (audioState.enabled) {
+            unlockAudioChannels();
+        }
+    };
+
     slider.addEventListener('input', syncVolume);
+    audioCheckbox.addEventListener('change', syncEnabled);
+    document.addEventListener('pointerdown', function() {
+        if (audioState.enabled) unlockAudioChannels();
+    }, { once: true });
+    document.addEventListener('keydown', function() {
+        if (audioState.enabled) unlockAudioChannels();
+    }, { once: true });
     syncVolume();
+    syncEnabled();
 }
 
 function wrapState(stateName, onEnter, onExit) {

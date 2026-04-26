@@ -38,6 +38,10 @@
             </div>
 
             <aside class="volume-panel" aria-label="Game audio volume">
+                <label class="audio-toggle">
+                    <input id="audio-enabled" type="checkbox" checked>
+                    <span>AUDIO</span>
+                </label>
                 <label class="volume-label" for="volume-slider">VOLUME</label>
                 <input id="volume-slider" class="volume-slider" type="range" min="0" max="100" value="35" step="5">
                 <span id="volume-value" class="volume-value">35%</span>
@@ -208,7 +212,7 @@
     <script src="mariohtml5-my-version/code/music.js"></script>
 
     <!-- Custom Leaderboard & Initialization -->
-    <script src="leaderboard.js?v=632bf38"></script>
-    <script src="main.js?v=632bf38"></script>
+    <script src="leaderboard.js?v=audio-toggle"></script>
+    <script src="main.js?v=audio-toggle"></script>
 </body>
 </html>
