@@ -23,17 +23,25 @@
     <meta property="twitter:title" content="Super Mario HTML5 - NES Edition">
     <meta property="twitter:description" content="Classic Mario gameplay with a self-hosted Docker leaderboard. Can you reach the top?">
     
-    <link rel="stylesheet" href="styles.css?v=73662c3">
+    <link rel="stylesheet" href="styles.css?v=volume-control">
 </head>
 <body class="page-antialias">
 
     <div class="main-wrapper">
         
-        <!-- Game Screen -->
-        <div id="game-container" class="scanlines">
-            <canvas id="canvas" width="320" height="240">
-                <p>Your browser does not support the canvas element.</p>
-            </canvas>
+        <div class="game-stage">
+            <!-- Game Screen -->
+            <div id="game-container" class="scanlines">
+                <canvas id="canvas" width="320" height="240">
+                    <p>Your browser does not support the canvas element.</p>
+                </canvas>
+            </div>
+
+            <aside class="volume-panel" aria-label="Game audio volume">
+                <label class="volume-label" for="volume-slider">VOLUME</label>
+                <input id="volume-slider" class="volume-slider" type="range" min="0" max="100" value="35" step="5">
+                <span id="volume-value" class="volume-value">35%</span>
+            </aside>
         </div>
 
         <div id="live-scoreboard" class="content-width">
@@ -200,7 +208,7 @@
     <script src="mariohtml5-my-version/code/music.js"></script>
 
     <!-- Custom Leaderboard & Initialization -->
-    <script src="leaderboard.js?v=73662c3"></script>
-    <script src="main.js?v=73662c3"></script>
+    <script src="leaderboard.js?v=632bf38"></script>
+    <script src="main.js?v=632bf38"></script>
 </body>
 </html>

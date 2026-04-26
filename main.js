@@ -12,6 +12,10 @@ const hudState = {
     statusOverride: null
 };
 
+const audioState = {
+    volume: 0.35
+};
+
 function pad(value, length) {
     return String(value).padStart(length, '0');
 }
@@ -88,6 +92,62 @@ function startHudLoop() {
     hudState.intervalId = window.setInterval(updateHud, 100);
 }
 
+function setAudioVolume(value) {
+    const nextVolume = Math.max(0, Math.min(1, Number(value)));
+    audioState.volume = Number.isFinite(nextVolume) ? nextVolume : 0.35;
+
+    if (window.Enjine && Enjine.Resources && Enjine.Resources.Sounds) {
+        Object.keys(Enjine.Resources.Sounds).forEach(function(name) {
+            Enjine.Resources.Sounds[name].forEach(function(channel) {
+                if (channel && typeof channel.volume === 'number') {
+                    channel.volume = audioState.volume;
+                }
+            });
+        });
+    }
+}
+
+function installAudioVolumeControls() {
+    if (!window.Enjine || !Enjine.Resources || Enjine.Resources.__volumePatched) return;
+
+    const originalAddSound = Enjine.Resources.AddSound;
+    const originalPlaySound = Enjine.Resources.PlaySound;
+
+    Enjine.Resources.AddSound = function(name, src, maxChannels) {
+        const result = originalAddSound.apply(this, arguments);
+        setAudioVolume(audioState.volume);
+        return result;
+    };
+
+    Enjine.Resources.PlaySound = function(name, loop) {
+        setAudioVolume(audioState.volume);
+        return originalPlaySound.apply(this, arguments);
+    };
+
+    Enjine.Resources.__volumePatched = true;
+}
+
+function bindVolumeSlider() {
+    const slider = document.getElementById('volume-slider');
+    const valueLabel = document.getElementById('volume-value');
+    if (!slider || !valueLabel) return;
+
+    const savedVolume = window.localStorage.getItem('mario-volume');
+    const initialVolume = savedVolume === null ? 35 : Math.max(0, Math.min(100, Number(savedVolume)));
+
+    slider.value = Number.isFinite(initialVolume) ? initialVolume : 35;
+
+    const syncVolume = function() {
+        const percent = Math.max(0, Math.min(100, Number(slider.value)));
+        valueLabel.innerText = `${percent}%`;
+        window.localStorage.setItem('mario-volume', String(percent));
+        setAudioVolume(percent / 100);
+    };
+
+    slider.addEventListener('input', syncVolume);
+    syncVolume();
+}
+
 function wrapState(stateName, onEnter, onExit) {
     const StateCtor = window.Mario && window.Mario[stateName];
     if (!StateCtor || !StateCtor.prototype) return;
@@ -146,6 +206,8 @@ function installStateHooks() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    installAudioVolumeControls();
+    bindVolumeSlider();
     installStateHooks();
     startHudLoop();
 
