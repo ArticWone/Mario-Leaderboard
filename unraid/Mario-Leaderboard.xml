@@ -11,7 +11,7 @@
   <Project>https://github.com/ArticWone/Mario-Leaderboard</Project>
   <Overview>Docker-only Mario leaderboard site with local JSON score storage.</Overview>
   <Category>GameServers: Web:</Category>
-  <WebUI>http://[IP]:[PORT:18673]/</WebUI>
+  <WebUI>http://[IP]:18673</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/unraid/Mario-Leaderboard.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/assets/favicon-192.png</Icon>
   <ExtraParams/>
@@ -21,6 +21,6 @@
   <DonateText/>
   <DonateLink/>
   <Requires/>
-  <Config Name="WebUI" Target="80" Default="18673" Mode="tcp" Description="HTTP port for the Mario leaderboard site." Type="Port" Display="always" Required="true" Mask="false">18673</Config>
+  <Config Name="Http Port" Target="80" Default="18673" Mode="tcp" Description="HTTP port for the Mario leaderboard site." Type="Port" Display="always" Required="true" Mask="false">18673</Config>
   <Config Name="Score Data" Target="/data" Default="/mnt/user/appdata/Mario-Leaderboard" Mode="rw" Description="Persistent writable score storage. The container writes scores.json here." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/Mario-Leaderboard</Config>
 </Container>
