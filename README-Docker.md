@@ -13,6 +13,7 @@ Verification note: Docker packaging was updated on April 26, 2026.
 - Static asset caching and security headers
 - `docker-compose.yml` for local testing
 - `unraid/Mario-Leaderboard.xml` for Unraid imports
+- `UNRAID-TEST.md` for test-container and GHCR troubleshooting commands
 
 ## Local Docker Usage
 
@@ -61,6 +62,8 @@ curl -X POST http://localhost:18673/api/scores \
 Names are normalized to 6 uppercase letters/numbers. Scores must be whole numbers from `0` to `9999999`.
 
 ## Unraid Notes
+
+For a safe first run on `whonot`, use the test-container flow in `UNRAID-TEST.md`.
 
 For an Unraid Docker template, use:
 
