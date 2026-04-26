@@ -67,7 +67,7 @@ For a safe first run on `whonot`, use the test-container flow in `UNRAID-TEST.md
 
 For an Unraid Docker template, use:
 
-- Repository: `ghcr.io/whonot-servers/mario-leaderboard:latest`
+- Repository: `ghcr.io/articwone/mario-leaderboard:latest`
 - Name: `Mario-Leaderboard`
 - Container Port: `80`
 - Host Port: `18673`
@@ -78,7 +78,7 @@ For an Unraid Docker template, use:
 Or run it directly on Unraid:
 
 ```bash
-docker run -d --name Mario-Leaderboard -p 18673:80 -v /mnt/user/appdata/Mario-Leaderboard:/data --restart unless-stopped ghcr.io/whonot-servers/mario-leaderboard:latest
+docker run -d --name Mario-Leaderboard -p 18673:80 -v /mnt/user/appdata/Mario-Leaderboard:/data --restart unless-stopped ghcr.io/articwone/mario-leaderboard:latest
 ```
 
 ## External Dependency
@@ -91,4 +91,4 @@ The image build still needs GitHub availability because the Docker build unpacks
 
 This repo is set up to publish a container image to:
 
-`ghcr.io/whonot-servers/mario-leaderboard:latest`
+`ghcr.io/articwone/mario-leaderboard:latest`

@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>Mario-Leaderboard</Name>
-  <Repository>ghcr.io/whonot-servers/mario-leaderboard:latest</Repository>
-  <Registry>https://ghcr.io/whonot-servers/mario-leaderboard</Registry>
+  <Repository>ghcr.io/articwone/mario-leaderboard:latest</Repository>
+  <Registry>https://ghcr.io/articwone/mario-leaderboard</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/whonot-servers/Mario-Leaderboard</Support>
-  <Project>https://github.com/whonot-servers/Mario-Leaderboard</Project>
+  <Support>https://github.com/ArticWone/Mario-Leaderboard</Support>
+  <Project>https://github.com/ArticWone/Mario-Leaderboard</Project>
   <Overview>Docker-only Mario leaderboard site with local JSON score storage.</Overview>
   <Category>GameServers: Web:</Category>
   <WebUI>http://[IP]:[PORT:80]/</WebUI>
