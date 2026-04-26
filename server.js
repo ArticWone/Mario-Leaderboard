@@ -7,6 +7,8 @@ const PORT = Number(process.env.PORT || 80);
 const PUBLIC_DIR = path.resolve(process.env.PUBLIC_DIR || '/usr/share/mario/html');
 const SCORE_FILE = path.resolve(process.env.SCORE_FILE || '/data/scores.json');
 const MAX_SCORES = 10;
+const SCORE_POST_LIMIT = Number(process.env.SCORE_POST_LIMIT || 20);
+const SCORE_POST_WINDOW_MS = Number(process.env.SCORE_POST_WINDOW_MS || 10 * 60 * 1000);
 
 const MIME_TYPES = {
     '.css': 'text/css; charset=utf-8',
@@ -35,6 +37,7 @@ const SECURITY_HEADERS = {
 };
 
 let writeQueue = Promise.resolve();
+const scorePostAttempts = new Map();
 
 function send(res, status, body, headers = {}) {
     res.writeHead(status, {
@@ -49,6 +52,50 @@ function sendJson(res, status, data) {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-store'
     });
+}
+
+function getClientId(req) {
+    const cfConnectingIp = req.headers['cf-connecting-ip'];
+    const forwardedFor = req.headers['x-forwarded-for'];
+
+    if (typeof cfConnectingIp === 'string' && cfConnectingIp.trim()) {
+        return cfConnectingIp.trim();
+    }
+
+    if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
+        return forwardedFor.split(',')[0].trim();
+    }
+
+    return req.socket.remoteAddress || 'unknown';
+}
+
+function isScorePostRateLimited(req) {
+    const now = Date.now();
+    const clientId = getClientId(req);
+    const existing = scorePostAttempts.get(clientId);
+
+    if (!existing || now >= existing.resetAt) {
+        scorePostAttempts.set(clientId, {
+            count: 1,
+            resetAt: now + SCORE_POST_WINDOW_MS
+        });
+        return false;
+    }
+
+    existing.count++;
+    if (existing.count > SCORE_POST_LIMIT) {
+        return true;
+    }
+
+    if (scorePostAttempts.size > 1000) {
+        for (const [key, value] of scorePostAttempts) {
+            if (now >= value.resetAt) {
+                scorePostAttempts.delete(key);
+            }
+        }
+    }
+
+    return false;
 }
 
 async function readBody(req) {
@@ -147,6 +194,11 @@ async function handleScores(req, res) {
         return;
     }
 
+    if (isScorePostRateLimited(req)) {
+        sendJson(res, 429, { error: 'rate_limited' });
+        return;
+    }
+
     let payload;
     try {
         payload = JSON.parse(await readBody(req));
@@ -192,11 +244,16 @@ async function serveStatic(req, res, pathname) {
 
     const ext = path.extname(filePath).toLowerCase();
     const immutable = /\.(?:png|jpg|jpeg|gif|svg|ico|wav|mp3|mid)$/i.test(filePath);
+    const activeAsset = /\.(?:html|js|css)$/i.test(filePath);
     const body = await fs.readFile(filePath);
 
     send(res, 200, body, {
         'Content-Type': MIME_TYPES[ext] || 'application/octet-stream',
-        'Cache-Control': immutable ? 'public, max-age=604800, immutable' : 'no-cache'
+        'Cache-Control': immutable
+            ? 'public, max-age=604800, immutable'
+            : activeAsset
+                ? 'no-store, max-age=0, must-revalidate'
+                : 'no-cache'
     });
 }
 
