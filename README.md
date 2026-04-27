@@ -4,7 +4,7 @@ This repo is a standalone Docker project for running the hardened Mario site wit
 
 Verification note: Docker packaging was updated on April 26, 2026.
 
-Current release channel: `beta.1.0.4`
+Current release channel: `beta.1.0.5`
 
 ## What It Includes
 
@@ -201,7 +201,7 @@ This Docker and Unraid packaging work builds on prior Mario HTML5 project work f
 - Xavier Hernandez's `mariohtml5` `my-version` branch: https://github.com/xavier-hernandez/mariohtml5/tree/my-version
 - Infinite Mario Bros by Markus Persson, also known as Notch
 
-The downloaded Infinite Mario Bros source package notes that its `/src/` code was released as public domain, while its `/res/` art resources remain owned by Nintendo. This repository's MIT license does not relicense upstream game code, Nintendo-owned art, trademarks, or other third-party assets.
+The downloaded Infinite Mario Bros source package notes that its `/src/` code was released as public domain, while its `/res/` art resources are third-party assets. This repository's MIT license does not relicense upstream game code, third-party art, trademarks, or other third-party assets.
 
 ## GitHub And GHCR
 
