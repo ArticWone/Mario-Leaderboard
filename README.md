@@ -4,6 +4,8 @@ This repo is a standalone Docker project for running the hardened Mario site wit
 
 Verification note: Docker packaging was updated on April 26, 2026.
 
+Current release channel: `beta.1.0.1`
+
 ## What It Includes
 
 - Hardened static site files for the Mario leaderboard wrapper
@@ -206,6 +208,17 @@ The downloaded Infinite Mario Bros source package notes that its `/src/` code wa
 This repo is set up to publish a container image to:
 
 `ghcr.io/articwone/mario-leaderboard:latest`
+
+Release uploads should also be tagged with the `beta.1.x.x` format. The current version is tracked in `VERSION`. For each update that is committed and pushed, bump the version before release and create a matching git tag, for example:
+
+```bash
+git tag beta.1.0.1
+git push articwone beta.1.0.1
+```
+
+The Docker publish workflow publishes matching beta tags to GHCR as:
+
+`ghcr.io/articwone/mario-leaderboard:beta.1.x.x`
 
 ## Quick Production Update
 
