@@ -748,6 +748,32 @@ canvas {
   z-index: 5;
 }
 
+.site-footer {
+  max-width: 780px;
+  margin: 16px auto 24px;
+  padding: 0 16px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 9px;
+  line-height: 1.6;
+  text-align: center;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+.site-footer p {
+  margin: 4px 0;
+}
+
+.site-footer a {
+  color: #f9d65c;
+  text-decoration: none;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
 @media (min-width: 640px) {
   .game-stage {
     grid-template-columns: minmax(0, 512px) 28px;

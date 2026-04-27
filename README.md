@@ -4,7 +4,7 @@ This repo is a standalone Docker project for running the hardened Mario site wit
 
 Verification note: Docker packaging was updated on April 26, 2026.
 
-Current release channel: `beta.1.0.2`
+Current release channel: `beta.1.0.4`
 
 ## What It Includes
 
