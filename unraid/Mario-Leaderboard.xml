@@ -7,11 +7,12 @@
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/ArticWone/Mario-Leaderboard</Support>
+  <Support>https://github.com/ArticWone/Mario-Leaderboard/issues</Support>
   <Project>https://github.com/ArticWone/Mario-Leaderboard</Project>
-  <Overview>Docker-only Mario leaderboard site with local JSON score storage.</Overview>
+  <Overview>Docker-only Mario leaderboard site with persistent local JSON score storage.</Overview>
+  <Description>Mario Leaderboard serves the browser game wrapper and a small score API from a single Docker container. Scores persist under /data/scores.json, which is mapped to appdata on Unraid.</Description>
   <Category>GameServers: Web:</Category>
-  <WebUI>http://[IP]:18673</WebUI>
+  <WebUI>http://[IP]:[PORT:80]/</WebUI>
   <TemplateURL>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/unraid/Mario-Leaderboard.xml</TemplateURL>
   <Icon>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/assets/favicon-192.png</Icon>
   <ExtraParams/>

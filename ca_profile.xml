@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Maintainer>
+  <Icon>https://raw.githubusercontent.com/ArticWone/Mario-Leaderboard/main/assets/favicon-192.png</Icon>
+  <Profile>
+    ArticWone maintains Mario Leaderboard for Unraid users who want a simple Docker-hosted browser game scoreboard with persistent local score storage. Support, issue tracking, template updates, and project documentation are handled through the public GitHub repository.
+  </Profile>
+  <WebPage>https://github.com/ArticWone/Mario-Leaderboard</WebPage>
+</Maintainer>

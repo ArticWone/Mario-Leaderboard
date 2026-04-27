@@ -13,6 +13,7 @@ Verification note: Docker packaging was updated on April 26, 2026.
 - Static asset caching and security headers
 - `docker-compose.yml` for local testing
 - `unraid/Mario-Leaderboard.xml` for Unraid imports
+- `ca_profile.xml` for the Unraid Community Applications maintainer profile
 - `UNRAID-TEST.md` for test-container and GHCR troubleshooting commands
 
 ## Local Docker Usage
@@ -62,6 +63,12 @@ curl -X POST http://localhost:18673/api/scores \
 Names are normalized to 6 uppercase letters/numbers. Scores must be whole numbers from `0` to `9999999`.
 
 ## Unraid Notes
+
+This repository includes the files expected by the Unraid Community Applications submission flow:
+
+- `LICENSE`, an OSI-approved MIT license for this repository's template, metadata, documentation, and wrapper code
+- `ca_profile.xml`, with a non-empty maintainer `<Profile>` section
+- `unraid/Mario-Leaderboard.xml`, a Docker template for Community Applications
 
 For a safe first run on the Unraid server, use the test-container flow in `UNRAID-TEST.md`.
 
@@ -182,6 +189,17 @@ This returns you to the Unraid console without stopping the container.
 Runtime score storage is fully self-contained inside Docker.
 
 The image build still needs GitHub availability because the Docker build unpacks the bundled Mario engine archive into the final image.
+
+The MIT license in this repository covers this repository's template, metadata, documentation, and wrapper code. Any third-party game engine or media content keeps its own upstream license terms.
+
+## Credits And Upstream Notes
+
+This Docker and Unraid packaging work builds on prior Mario HTML5 project work from:
+
+- Xavier Hernandez's `mariohtml5` `my-version` branch: https://github.com/xavier-hernandez/mariohtml5/tree/my-version
+- Infinite Mario Bros by Markus Persson, also known as Notch
+
+The downloaded Infinite Mario Bros source package notes that its `/src/` code was released as public domain, while its `/res/` art resources remain owned by Nintendo. This repository's MIT license does not relicense upstream game code, Nintendo-owned art, trademarks, or other third-party assets.
 
 ## GitHub And GHCR
 
