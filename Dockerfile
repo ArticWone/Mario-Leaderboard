@@ -17,8 +17,19 @@ RUN unzip -q /tmp/mariohtml5-my-version.zip -d /usr/share/mario/html \
     && rm -f /tmp/mariohtml5-my-version.zip \
     && mkdir -p /data
 
+ENV NODE_ENV=production
+ENV LOG_LEVEL=info
+ENV PORT=80
 ENV PUBLIC_DIR=/usr/share/mario/html
 ENV SCORE_FILE=/data/scores.json
+ENV MAX_SCORES=10
+ENV SCORE_POST_LIMIT=20
+ENV SCORE_POST_WINDOW_MS=600000
+ENV ENABLE_SECURITY_HEADERS=true
+ENV HEALTHCHECK_ENDPOINT=/healthz
+ENV REQUEST_TIMEOUT_MS=30000
+ENV SCORE_CLEANUP_INTERVAL_MS=3600000
+ENV CORS_ORIGIN=
 
 EXPOSE 80
 VOLUME ["/data"]

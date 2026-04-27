@@ -3,12 +3,19 @@ const http = require('node:http');
 const path = require('node:path');
 const { URL } = require('node:url');
 
+const NODE_ENV = process.env.NODE_ENV || 'production';
+const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 const PORT = Number(process.env.PORT || 80);
 const PUBLIC_DIR = path.resolve(process.env.PUBLIC_DIR || '/usr/share/mario/html');
 const SCORE_FILE = path.resolve(process.env.SCORE_FILE || '/data/scores.json');
-const MAX_SCORES = 10;
+const MAX_SCORES = Number(process.env.MAX_SCORES || 10);
 const SCORE_POST_LIMIT = Number(process.env.SCORE_POST_LIMIT || 20);
 const SCORE_POST_WINDOW_MS = Number(process.env.SCORE_POST_WINDOW_MS || 10 * 60 * 1000);
+const ENABLE_SECURITY_HEADERS = process.env.ENABLE_SECURITY_HEADERS !== 'false';
+const HEALTHCHECK_ENDPOINT = process.env.HEALTHCHECK_ENDPOINT || '/healthz';
+const REQUEST_TIMEOUT_MS = Number(process.env.REQUEST_TIMEOUT_MS || 30000);
+const SCORE_CLEANUP_INTERVAL_MS = Number(process.env.SCORE_CLEANUP_INTERVAL_MS || 60 * 60 * 1000);
+const CORS_ORIGIN = process.env.CORS_ORIGIN || '';
 
 const MIME_TYPES = {
     '.css': 'text/css; charset=utf-8',
@@ -39,9 +46,41 @@ const SECURITY_HEADERS = {
 let writeQueue = Promise.resolve();
 const scorePostAttempts = new Map();
 
+function log(level, ...args) {
+    const levels = ['debug', 'info', 'warn', 'error'];
+    const configuredLevel = levels.includes(LOG_LEVEL) ? LOG_LEVEL : 'info';
+
+    if (levels.indexOf(level) < levels.indexOf(configuredLevel)) {
+        return;
+    }
+
+    const target = level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
+    target(...args);
+}
+
+function getSecurityHeaders() {
+    if (!ENABLE_SECURITY_HEADERS) {
+        return {};
+    }
+    return SECURITY_HEADERS;
+}
+
+function getCorsHeaders() {
+    if (!CORS_ORIGIN) {
+        return {};
+    }
+
+    return {
+        'Access-Control-Allow-Origin': CORS_ORIGIN,
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    };
+}
+
 function send(res, status, body, headers = {}) {
     res.writeHead(status, {
-        ...SECURITY_HEADERS,
+        ...getSecurityHeaders(),
+        ...getCorsHeaders(),
         ...headers
     });
     res.end(body);
@@ -96,6 +135,16 @@ function isScorePostRateLimited(req) {
     }
 
     return false;
+}
+
+function cleanupScorePostAttempts() {
+    const now = Date.now();
+
+    for (const [key, value] of scorePostAttempts) {
+        if (now >= value.resetAt) {
+            scorePostAttempts.delete(key);
+        }
+    }
 }
 
 async function readBody(req) {
@@ -261,7 +310,12 @@ const server = http.createServer(async (req, res) => {
     try {
         const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
-        if (url.pathname === '/healthz') {
+        if (req.method === 'OPTIONS' && CORS_ORIGIN) {
+            send(res, 204, '');
+            return;
+        }
+
+        if (url.pathname === HEALTHCHECK_ENDPOINT) {
             send(res, 200, 'ok\n', {
                 'Content-Type': 'text/plain; charset=utf-8',
                 'Cache-Control': 'no-store'
@@ -276,19 +330,27 @@ const server = http.createServer(async (req, res) => {
 
         await serveStatic(req, res, url.pathname);
     } catch (err) {
-        console.error(err);
+        log('error', err);
         sendJson(res, 500, { error: 'server_error' });
     }
 });
 
+server.requestTimeout = REQUEST_TIMEOUT_MS;
+server.headersTimeout = REQUEST_TIMEOUT_MS + 5000;
+
 ensureScoreFile()
     .then(() => {
+        if (SCORE_CLEANUP_INTERVAL_MS > 0) {
+            setInterval(cleanupScorePostAttempts, SCORE_CLEANUP_INTERVAL_MS).unref();
+        }
+
         server.listen(PORT, '0.0.0.0', () => {
-            console.log(`Mario Leaderboard listening on ${PORT}`);
-            console.log(`Score file: ${SCORE_FILE}`);
+            log('info', `Mario Leaderboard listening on ${PORT}`);
+            log('info', `Score file: ${SCORE_FILE}`);
+            log('debug', `Environment: ${NODE_ENV}`);
         });
     })
     .catch((err) => {
-        console.error('Unable to initialize score file:', err);
+        log('error', 'Unable to initialize score file:', err);
         process.exit(1);
     });
